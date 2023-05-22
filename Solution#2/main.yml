@@ -1,0 +1,44 @@
+- hosts: all
+  tasks: 
+  - name: Disable SELinux
+    selinux:
+      state: disabled
+    when: ansible_os_family == 'RedHat'
+
+  - name: install  Apache
+    package:
+      name: "{{ package_name }}"
+      state: latest
+
+  - name: Make sure a service is running
+    systemd:
+      state: started
+      name: "{{ service_name }}"
+
+  - name: Make sure a service is running
+    systemd:
+      enabled: yes
+      name: "{{ service_name }}"
+
+  - name: Download foo.conf
+    get_url:
+      url: https://www.free-css.com/assets/files/free-css-templates/download/page291/atlas.zip
+      dest: /tmp/atlas.zip
+
+  - name: Install Unzip
+    package:
+      name: "{{ service_name }}"
+      state: latest
+
+  - name: Extract /tmp/atlas.zip
+    unarchive:
+      src: /tmp/atlas.zip
+      dest: /tmp/
+      remote_src: yes
+
+  - name: Move templetes file to /var/www/html
+    shell: "mv /tmp/Atlas/* /var/www/html/"
+    args:
+      creates: /var/www/html/index.html
+
+
